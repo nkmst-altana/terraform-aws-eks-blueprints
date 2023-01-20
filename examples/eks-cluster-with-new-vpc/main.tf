@@ -1,5 +1,9 @@
 provider "aws" {
-  region = local.region
+  region = var.region
+  allowed_account_ids = var.allowed_account_ids
+  assume_role {
+    role_arn= var.role_to_assume
+  }
 }
 
 provider "kubernetes" {
@@ -28,16 +32,16 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  name = basename(path.cwd)
+  name = var.name
+  cluster_size = var.cluster_size
   # var.cluster_name is for Terratest
-  cluster_name = coalesce(var.cluster_name, local.name)
-  region       = "us-west-2"
+  cluster_name = coalesce(var.terratest_cluster_name, var.name)
 
   vpc_cidr = "10.0.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
   tags = {
-    Blueprint  = local.name
+    Blueprint  = "eks-cluster-with-new-vpc"
     GithubRepo = "github.com/aws-ia/terraform-aws-eks-blueprints"
   }
 }
@@ -59,9 +63,9 @@ module "eks_blueprints" {
     mg_5 = {
       node_group_name = "managed-ondemand"
       instance_types  = ["m5.large"]
-      min_size        = 3
-      max_size        = 3
-      desired_size    = 3
+      min_size        = local.cluster_size
+      max_size        = local.cluster_size
+      desired_size    = local.cluster_size
       subnet_ids      = module.vpc.private_subnets
     }
   }
