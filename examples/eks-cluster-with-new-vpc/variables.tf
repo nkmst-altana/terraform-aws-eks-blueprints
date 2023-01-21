@@ -30,4 +30,7 @@ variable "role_to_assume" {
   type = string
 }
 
-
+variable "is_flyte_deploy" {
+  description = "is this deploying flyte"
+  type = bool
+}
