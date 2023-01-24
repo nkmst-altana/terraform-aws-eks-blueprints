@@ -4,6 +4,7 @@
 
 configuration:
   database:
+    username: "flyteadmin"
     password: "password"
     host: "terraform-20230124034226276500000005.cffbcqn89dac.us-east-1.rds.amazonaws.com"
     dbname: flyteadmin  

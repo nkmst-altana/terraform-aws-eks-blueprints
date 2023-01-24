@@ -31,9 +31,32 @@ resource "aws_s3_bucket_acl" "flyte_user_data_bucket_acl" {
 #-------------------------------------------------
 # Flyte RDS
 #-------------------------------------------------
+# TODO delete this subnet group
 resource "aws_db_subnet_group" "flyte_db_subnet_group" {
   name = "flyte-db-subnet-group"
   subnet_ids = module.vpc.private_subnets
+}
+
+module "flyte_db_security_group" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "~> 4.0"
+
+  name        = local.name
+  description = "Complete PostgreSQL example security group"
+  vpc_id      = module.vpc.vpc_id
+
+  # ingress
+  ingress_with_cidr_blocks = [
+    {
+      from_port   = 5432
+      to_port     = 5432
+      protocol    = "tcp"
+      description = "PostgreSQL access from within VPC"
+      cidr_blocks = module.vpc.vpc_cidr_block
+    },
+  ]
+
+  tags = local.tags
 }
 
 resource "aws_db_instance" "flyte_db" {
@@ -49,8 +72,8 @@ resource "aws_db_instance" "flyte_db" {
   skip_final_snapshot  = true
   publicly_accessible = false
 
-  db_subnet_group_name = aws_db_subnet_group.flyte_db_subnet_group.name
-  vpc_security_group_ids = [ module.eks_blueprints.worker_node_security_group_id ]
+  db_subnet_group_name = module.vpc.database_subnet_group_name
+  vpc_security_group_ids = [ module.flyte_db_security_group.security_group_id ]
 }
 
 #-------------------------------------------------

@@ -129,6 +129,9 @@ module "vpc" {
 
   name = local.name
   cidr = local.vpc_cidr
+ 
+  create_database_subnet_group       = true
+  create_database_subnet_route_table = true
 
   azs             = local.azs
   public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)]
