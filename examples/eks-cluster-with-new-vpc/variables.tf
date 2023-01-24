@@ -34,3 +34,8 @@ variable "is_flyte_deploy" {
   description = "is this deploying flyte"
   type = bool
 }
+
+variable "flyte_db_password" {
+  description = "flyte_db pass"
+  type = string
+}
