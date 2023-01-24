@@ -10,11 +10,6 @@ variable "name" {
   type = string
 }
 
-variable "cluster_size" {
-  description = "number of nodes in the cluster"
-  type = number
-}
-
 variable "region" {
   description = "region for deployment"
   type = string

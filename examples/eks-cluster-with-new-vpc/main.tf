@@ -33,7 +33,6 @@ data "aws_availability_zones" "available" {
 
 locals {
   name = var.name
-  cluster_size = var.cluster_size
   # var.cluster_name is for Terratest
   cluster_name = coalesce(var.terratest_cluster_name, var.name)
 
@@ -63,9 +62,9 @@ module "eks_blueprints" {
     mg_5 = {
       node_group_name = "managed-ondemand"
       instance_types  = ["m5.large"]
-      min_size        = local.cluster_size
-      max_size        = local.cluster_size
-      desired_size    = local.cluster_size
+      min_size        = 10
+      max_size        = 20
+      desired_size    = 15 # note that this is ignored on update and must be done via AWS console
       subnet_ids      = module.vpc.private_subnets
     }
   }
